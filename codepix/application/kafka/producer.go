@@ -26,7 +26,7 @@ func Publish(msg string, topic string, producer *ckafka.Producer, deliveryChan c
 		Value:          []byte(msg),
 	}
 
-	err := producer.Produce(message, nil)
+	err := producer.Produce(message, deliveryChan)
 	if err != nil {
 		return err
 	}

@@ -12,7 +12,6 @@ require (
 	github.com/lib/pq v1.10.5
 	github.com/satori/go.uuid v1.2.0
 	github.com/spf13/cobra v1.4.0
-	github.com/spf13/cobra-cli v1.3.0 // indirect
 	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/grpc v1.45.0

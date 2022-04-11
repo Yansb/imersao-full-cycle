@@ -35,4 +35,9 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .docker/dbdata
+.docker/dbdatabbx
+.docker/dbdatacter
 .env
+
+dist-bbx
+dist-cter

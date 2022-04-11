@@ -47,6 +47,7 @@ func (k *KafkaProcessor) Consume() {
 	for {
 		msg, err := c.ReadMessage(-1)
 		if err == nil {
+			fmt.Println(string(msg.Value))
 			k.processMessage(msg)
 		}
 	}
@@ -55,7 +56,6 @@ func (k *KafkaProcessor) Consume() {
 func (k *KafkaProcessor) processMessage(msg *ckafka.Message) {
 	transactionsTopic := "transactions"
 	transactionConfirmationTopic := "transaction_confirmation"
-
 	switch topic := *msg.TopicPartition.Topic; topic {
 	case transactionsTopic:
 		k.processTransaction(msg)
@@ -83,7 +83,7 @@ func (k *KafkaProcessor) processTransaction(msg *ckafka.Message) error {
 		transaction.Description,
 	)
 	if err != nil {
-		fmt.Println("Error registering transaction", err)
+		fmt.Println("error registering transaction", err)
 		return err
 	}
 
@@ -91,6 +91,7 @@ func (k *KafkaProcessor) processTransaction(msg *ckafka.Message) error {
 	transaction.ID = createdTransaction.ID
 	transaction.Status = model.TransactionPending
 	transactionJson, err := transaction.ToJson()
+
 	if err != nil {
 		return err
 	}
@@ -99,7 +100,6 @@ func (k *KafkaProcessor) processTransaction(msg *ckafka.Message) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
