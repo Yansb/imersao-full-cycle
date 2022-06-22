@@ -36,8 +36,6 @@ func (k *KafkaConsumer) Consume() {
 	fmt.Println("Kafka consumer has been started")
 	for {
 		msg, err := c.ReadMessage(-1)
-		fmt.Println("Kafka consumer has read a message")
-		fmt.Print(msg)
 		if err == nil {
 			k.MsgChan <- msg
 		}
