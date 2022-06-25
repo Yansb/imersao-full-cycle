@@ -4,6 +4,7 @@ import { RoutesController } from './routes.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Route, RouteSchema } from './entities/route.entity';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RoutesGateway } from './routes.gateway';
 
 @Module({
   imports: [
@@ -17,6 +18,12 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
             client: {
               clientId: process.env.KAFKA_CLIENT_ID,
               brokers: [process.env.KAFKA_BROKER],
+              ssl: true,
+              sasl: {
+                mechanism: 'plain',
+                username: process.env.KAFKA_SASL_USERNAME,
+                password: process.env.KAFKA_SASL_PASSWORD,
+              },
             },
             consumer: {
               groupId:
@@ -31,6 +38,6 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
   ],
   controllers: [RoutesController],
-  providers: [RoutesService],
+  providers: [RoutesService, RoutesGateway],
 })
 export class RoutesModule {}
