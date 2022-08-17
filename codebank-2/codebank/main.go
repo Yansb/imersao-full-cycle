@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/domain"
+	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/infrastructure/kafka"
 	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/infrastructure/repository"
+	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/infrastructure/server"
 	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/usecase"
 	"log"
 )
@@ -13,28 +14,15 @@ import (
 func main() {
 	db := setupDb()
 	defer db.Close()
-
-	cc := domain.NewCreditCard()
-	cc.Number = "1234"
-	cc.Name = "Yansb"
-	cc.ExpirationMonth = 12
-	cc.ExpirationYear = 2022
-	cc.CVV = 123
-	cc.Limit = 1000
-	cc.Balance = 50
-
-	repo := repository.NewTransactionRepositoryDb(db)
-	err := repo.CreateCreditCard(*cc)
-	if err != nil {
-		log.Fatalln("Error creating credit card:", err)
-	}
-
+	producer := setupKafkaProducer()
+	processTransactionUseCase := setupTransactionUseCase(db, producer)
+	serverGrpc(processTransactionUseCase)
 }
 
-func setupTransactionUseCase(db *sql.DB) usecase.UseCaseTransaction {
+func setupTransactionUseCase(db *sql.DB, producer kafka.KafkaProducer) usecase.UseCaseTransaction {
 	transactionRepository := repository.NewTransactionRepositoryDb(db)
-	useCase := usecase.NewUseCaseTransaction(transactionRepository)
-	return useCase
+	transactionUseCase := usecase.NewUseCaseTransaction(transactionRepository, producer)
+	return transactionUseCase
 }
 
 func setupDb() *sql.DB {
@@ -55,4 +43,16 @@ func setupDb() *sql.DB {
 	}
 
 	return db
+}
+
+func setupKafkaProducer() kafka.KafkaProducer {
+	producer := kafka.NewKafkaProducer()
+	producer.SetupProducer("host.docker.internal:9094")
+	return producer
+}
+
+func serverGrpc(processTransactionUseCase usecase.UseCaseTransaction) {
+	grpcServer := server.NewGRPCServer()
+	grpcServer.ProcessTransactionUseCase = processTransactionUseCase
+	grpcServer.Serve()
 }
