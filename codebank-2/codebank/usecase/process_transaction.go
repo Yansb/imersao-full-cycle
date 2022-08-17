@@ -5,6 +5,7 @@ import (
 	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/domain"
 	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/dto"
 	"github.com/yansb/imersao-full-cycle/codebank-2/codebank/infrastructure/kafka"
+	"os"
 	"time"
 )
 
@@ -46,7 +47,7 @@ func (u UseCaseTransaction) ProcessTransaction(transactionDto dto.Transaction) (
 		return domain.Transaction{}, err
 	}
 
-	err = u.KafkaProducer.Publish(string(transactionJson), "payments")
+	err = u.KafkaProducer.Publish(string(transactionJson), os.Getenv("KafkaTransactionsTopic"))
 	if err != nil {
 		return domain.Transaction{}, err
 	}
