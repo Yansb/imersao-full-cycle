@@ -5,12 +5,14 @@ import { In, Repository } from 'typeorm';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from './entities/order.entity';
+import { PaymentService } from './payment/payment.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(Order) private orderRepo: Repository<Order>,
     @InjectRepository(Product) private productRepo: Repository<Product>,
+    private paymentService: PaymentService,
   ) {}
 
   async findProducts(ids: string[]) {
@@ -48,7 +50,21 @@ export class OrdersService {
       );
       item.price = product.price;
     });
-    return this.orderRepo.save(order);
+    const newOrder = this.orderRepo.save(order);
+    this.paymentService.payment({
+      creditCard: {
+        name: createOrderDto.credit_card.name,
+        number: createOrderDto.credit_card.number,
+        expiration_month: createOrderDto.credit_card.expiration_month,
+        expiration_year: createOrderDto.credit_card.expiration_year,
+        cvv: createOrderDto.credit_card.cvv,
+      },
+      amount: order.items.reduce((acc, item) => acc + item.price, 0),
+      store: process.env.STORE_NAME,
+      description: '',
+    });
+
+    return newOrder;
   }
 
   findAll() {
