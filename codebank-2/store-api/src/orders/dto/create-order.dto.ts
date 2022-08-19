@@ -13,8 +13,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Product } from 'src/products/entities/product.entity';
-import { Exists } from 'src/validators/exists.rule';
-import { MinCallback } from 'src/validators/min-callback.rule';
 
 class CreditCardDto {
   @MaxLength(16)
@@ -28,12 +26,10 @@ class CreditCardDto {
   @IsNotEmpty()
   name: string;
 
-  @MinCallback(() => new Date().getMonth() + 1)
   @IsInt()
   @IsNotEmpty()
   expiration_month: number;
 
-  @MinCallback(() => new Date().getFullYear())
   @IsInt()
   @IsNotEmpty()
   expiration_year: number;

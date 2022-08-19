@@ -14,8 +14,9 @@ import Link from "next/link";
 import { GetServerSideProps, NextPage } from "next";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { Product } from "../../../model";
+import { CreditCard, Product } from "../../../model";
 import { http } from "../../../http";
+import { useForm } from "react-hook-form";
 
 interface OrderPageProps{
   product: Product;
@@ -23,6 +24,17 @@ interface OrderPageProps{
 
 const OrderPage: NextPage<OrderPageProps> = ({product}) => {
   const router = useRouter();
+
+  const {register, handleSubmit } = useForm()
+
+  const onSubmit = async (data: CreditCard) => {
+    const {data: order} = await http.post('orders', {
+      credit_card: {...data, expiration_month: parseInt(data.expiration_month), expiration_year: parseInt(data.expiration_year)},
+      items: [{product_id: product.id, quantity: 1}]
+    });
+
+    console.log(order)
+  }
 
   if(router.isFallback){
     return <div>Carregando...</div>
@@ -48,24 +60,35 @@ const OrderPage: NextPage<OrderPageProps> = ({product}) => {
       <Typography component="h2" variant="h5" gutterBottom>
         Pague com seu cartão de credito
       </Typography>
-      <form >
+      <form onSubmit={handleSubmit(onSubmit)} >
         <Grid container spacing={3}>
           <Grid item xs={12} md={6}>
-            <TextField required label="Nome" fullWidth/>
+            <TextField {...register("name")} required label="Nome" fullWidth/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <TextField inputProps={{maxLength: 16}} required label="Numero do cartão" fullWidth/>
+            <TextField {...register("number")} inputProps={{maxLength: 16}} required label="Numero do cartão" fullWidth/>
           </Grid>
           <Grid item xs={12} md={6}>
-            <TextField type="number" required label="CVV" fullWidth/>
+            <TextField {...register("cvv")} type="number" required label="CVV" fullWidth/>
           </Grid>
           <Grid item xs={12} md={6}>
             <Grid container spacing={3}>
               <Grid item xs={6}>
-                <TextField type="number" required label="Expiração mês" fullWidth/>
+                <TextField 
+                  {...register("expiration_month")} 
+                  type="number" 
+                  required 
+                  label="Expiração mês" 
+                  fullWidth 
+                  />
               </Grid>
               <Grid item xs={6}>
-                <TextField type="number" required label="Expiração ano" fullWidth/>
+                <TextField 
+                {...register("expiration_year")} 
+                type="number" 
+                required label="Expiração ano" 
+                fullWidth                   
+                />
               </Grid>
             </Grid>
           </Grid>

@@ -9,7 +9,7 @@ import {
   CardHeader,
 } from "@material-ui/core";
 import Head from "next/head";
-import { Product, products } from "../../../model";
+import { Product} from "../../../model";
 import Link from "next/link";
 import { GetStaticPaths, GetStaticProps, NextPage } from "next";
 import { http } from "../../../http";
@@ -86,7 +86,7 @@ export const getStaticProps: GetStaticProps<ProductDetailPageProps, {slug: strin
 }
 
 export const getStaticPaths: GetStaticPaths = async (context) => {
-  const {data: product} = await http.get(`products`);
+  const {data: products} = await http.get(`products`);
 
   const paths = products.map((p: Product) => ({
     params: {slug: p.slug},
