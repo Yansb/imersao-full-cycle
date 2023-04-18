@@ -2,6 +2,7 @@ package entity
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -64,10 +65,12 @@ func (c *Chat) AddMessage(msg *Message) error {
 	}
 	for {
 		if c.Config.Model.GetMaxTokens() >= msg.GetQtdTokens()+c.TokenUsage {
+			fmt.Println("Entrei no IF")
 			c.Messages = append(c.Messages, msg)
 			c.RefreshTokenUsage()
 			break
 		}
+		fmt.Println("erasing message", c.Messages[0].Content)
 		c.ErasedMessages = append(c.ErasedMessages, c.Messages[0])
 		c.Messages = c.Messages[1:]
 		c.RefreshTokenUsage()
