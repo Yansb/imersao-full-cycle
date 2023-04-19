@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/yansb/imersao-full-cycle/chatservice/internal/domain/entity"
@@ -188,7 +187,6 @@ func (r *ChatRepositoryMySQL) SaveChat(ctx context.Context, chat *entity.Chat) e
 	// save erased messages
 	i = 0
 	for _, message := range chat.ErasedMessages {
-		fmt.Println(message)
 		err = r.Queries.AddMessage(
 			ctx,
 			db.AddMessageParams{
@@ -203,7 +201,6 @@ func (r *ChatRepositoryMySQL) SaveChat(ctx context.Context, chat *entity.Chat) e
 				Erased:    true,
 			},
 		)
-		fmt.Println(err)
 		if err != nil {
 			return err
 		}

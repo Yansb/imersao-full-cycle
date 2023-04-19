@@ -65,7 +65,6 @@ func (c *Chat) AddMessage(msg *Message) error {
 	}
 	for {
 		if c.Config.Model.GetMaxTokens() >= msg.GetQtdTokens()+c.TokenUsage {
-			fmt.Println("Entrei no IF")
 			c.Messages = append(c.Messages, msg)
 			c.RefreshTokenUsage()
 			break
