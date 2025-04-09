@@ -9,7 +9,7 @@ Content-Type: application/json
 
 {
     "name": "John Doe",
-    "email": "john@doew.com"
+    "email": "john@doe.com"
 }
 
 ### Obter dados da conta
@@ -24,7 +24,7 @@ Content-Type: application/json
 X-API-Key: {{apiKey}}
 
 {
-    "amount": 100.50,
+    "amount": 150.50,
     "description": "Teste de fatura",
     "payment_type": "credit_card",
     "card_number": "4111111111111111",
